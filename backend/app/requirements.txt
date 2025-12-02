@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-multipart
+PyPDF2
+python-dotenv
+requests
+sentence-transformers
+numpy
