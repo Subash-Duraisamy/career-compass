@@ -1,0 +1,67 @@
+.navbar {
+  width: 100%;
+  background: var(--card-bg);
+  color: var(--text-color);
+  padding: 12px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Left: Logo + Title */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.nav-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Center Menu */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.nav-links li a:hover {
+  color: #3b82f6;
+}
+
+/* Right Icons */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.nav-profile {
+  font-size: 28px;
+  cursor: pointer;
+}
