@@ -1,0 +1,123 @@
+/* Floating button */
+.chat-float-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 65px;
+  height: 65px;
+  background: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  animation: float 2s infinite ease-in-out;
+  box-shadow: 0px 4px 14px rgba(0,0,0,0.3);
+  z-index: 9999;
+}
+
+.chat-float-icon {
+  width: 32px;
+  filter: brightness(0) invert(1);
+}
+
+/* Chatbox */
+.chatbox {
+  position: fixed;
+  bottom: 130px;
+  right: 25px;
+  width: 330px;
+  height: 430px;
+  background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  z-index: 9999;
+  animation: fadeIn 0.25s ease;
+  border: 1px solid var(--border-color);
+
+  display: flex;              /* 👈 IMPORTANT */
+  flex-direction: column;     /* 👈 IMPORTANT */
+  overflow: hidden;
+}
+
+/* Header */
+.chatbox-header {
+  background: #2563eb;
+  color: white;
+  padding: 12px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Messages area (scrolls internally) */
+.chatbox-messages {
+  flex: 1;                    /* 👈 TAKE ALL REMAINING HEIGHT */
+  padding: 12px;
+  overflow-y: auto;           /* 👈 INTERNAL SCROLL */
+}
+
+/* Message bubbles */
+.msg {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  max-width: 80%;
+}
+
+.user-msg {
+  background: #2563eb;
+  color: white;
+  margin-left: auto;
+}
+
+.bot-msg {
+  background: #e5e7eb;
+  color: black;
+  margin-right: auto;
+}
+
+/* Input section */
+.chatbox-input {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  padding: 8px;          /* 👈 FIXED: remove padding-top 70px */
+}
+
+.chatbox-input input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  outline: none;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.chatbox-input button {
+  padding: 0 20px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}

@@ -1,122 +1,287 @@
-/* ========= Global Styles ========== */
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
 
 body {
-  margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-/* Light + Dark mode variables */
-:root {
-  --bg-color: #f4f4f5;
-  --card-bg: #ffffff;
-  --text-color: #222;
-  --button-bg: #2563eb;
-  --button-text: white;
-  --border-color: #e4e4e7;
-}
-
-.dark-mode {
-  --bg-color: #18181b;
-  --card-bg: #27272a;
-  --text-color: #fafafa;
-  --button-bg: #3b82f6;
-  --button-text: #fff;
-  --border-color: #3f3f46;
-}
-
-/* ========= Layout ========== */
-
-.container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 30px;
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease;
-}
-
-button {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 500;
-  margin-top: 10px;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-textarea {
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--text-color);
-  width: 100%;
-  resize: none;
-}
-
-input[type="file"] {
-  margin-top: 12px;
-}
-
-.result-card {
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  transition: background 0.3s ease;
-}
-
-.hero-section {
-  text-align: center;
-  padding: 40px 10px;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   color: white;
-  border-radius: 0 0 20px 20px;
-  margin-bottom: 30px;
 }
 
-.hero-section h1 {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 10px;
+/* FIXED NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 40px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5000;
 }
-
-.hero-section p {
-  font-size: 18px;
-  opacity: 0.9;
-}
-.strength-box {
-  background: #d1fae5; /* Light green */
-  padding: 12px;
+.answer-box {
+  width: 100%;
+  padding: 14px;
   border-radius: 10px;
-  margin-bottom: 10px;
-  color: #065f46;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  outline: none;
+  font-size: 16px;
+  resize: none;
+  transition: 0.2s;
 }
+
+.answer-box:focus {
+  border-color: #3b82f6;
+  background: #1e293b;
+}
+
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+}
+
+.nav-links a {
+  margin-left: 30px;
+  font-size: 15px;
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.nav-links a:hover {
+  color: #60a5fa;
+}
+
+/* SPACE BELOW NAVBAR */
+.page-wrapper {
+  padding-top: 90px;
+}
+
+/* MAIN LANDING SECTION */
+.landing-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 60px;
+  min-height: 80vh;
+}
+
+/* LEFT SIDE */
+.hero-left {
+  width: 50%;
+}
+
+/* HEADINGS & TEXT */
+.hero-title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.highlight {
+  color: #60a5fa;
+}
+
+.hero-subtitle {
+  margin-top: 15px;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* UPLOAD SECTION */
+.upload-box {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+}
+
+.upload-label {
+  background: #1e293b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.upload-label:hover {
+  background: #243447;
+}
+
+.upload-label input {
+  display: none;
+}
+
+.process-btn {
+  background: #2563eb;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.process-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Uploaded file info box */
+.uploaded-file-box {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.file-icon {
+  font-size: 18px;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+/* COMPANY SELECTION ROW */
+.company-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.company-title {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #e2e8f0;
+}
+
+.company-select {
+  width: 180px;
+}
+
+/* RIGHT SIDE IMAGE */
+.hero-right {
+  width: 45%;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-illustration {
+  width: 90%;
+  filter: drop-shadow(0px 4px 18px rgba(0,0,0,0.4));
+}
+
+/* RESULT CARD */
+.result-card {
+  margin: 40px auto;
+  width: 70%;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.3);
+}
+
+/* RESULT CONTENT SECTIONS */
+.strength-box {
+  background: #22c55e33;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
 
 .missing-box {
-  background: #fee2e2; /* Light red */
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  color: #7f1d1d;
+  background: #ef444433;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
 }
 
 .tip-box {
-  background: #fef3c7; /* Light yellow */
+  background: #fcd34d33;
   padding: 12px;
-  border-radius: 10px;
-  margin-top: 20px;
-  color: #78350f;
-  font-weight: 500;
+  margin-top: 15px;
+  border-radius: 8px;
 }
+
+/* LOADING TEXT */
+.loading-text {
+  margin-top: 15px;
+  color: #60a5fa;
+}
+
+/* INTERVIEW RESULT CARD */
+.interview-card {
+  margin-top: 10px;            /* moved UP */
+  padding: 18px;               /* slightly reduced padding */
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  width: 70%;
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.3);
+}
+.interview-card {
+  margin-top: -5px;
+}
+/* Styled Job Role Heading */
+.role-heading {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 25px;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+}
+
+/* PREMIUM Styled Dropdown */
+.role-select {
+  width: 60%;
+  max-width: 380px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  color: #f1f5f9;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+
+.role-select:hover {
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.role-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 8px #3b82f655;
+}
+
+/* Dropdown options style (for supported browsers) */
+.role-select option {
+  background: #0f172a;
+  color: #f1f5f9;
+  padding: 10px;
+}
+

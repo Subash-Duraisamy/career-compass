@@ -1,0 +1,36 @@
+.jobmatch-container {
+  margin-top: 20px;
+}
+
+.jobmatch-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: 600;
+  background: #1e40af;
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.jobmatch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.job-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.score {
+  background: #2563eb;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 10px;
+}

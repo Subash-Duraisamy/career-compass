@@ -1,19 +1,34 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Main from "./pages/Main";
 import Chat from "./pages/Chat";
-import Navbar from "./components/Navbar";
+import JobMatchPage from "./pages/JobMatchPage";
+import InterviewPage from "./pages/InterviewPage";
 
+import Navbar from "./components/Navbar";
+import FloatingChat from "./components/FloatingChat";
+import { ResumeProvider } from "./context/ResumeContext";
 
 function App() {
   return (
-    <BrowserRouter>
-     <Navbar />
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/chat" element={<Chat />} />
-      </Routes>
-    </BrowserRouter>
+    <ResumeProvider>
+      <BrowserRouter>
+
+        {/* NAVBAR ALWAYS VISIBLE */}
+        <Navbar />
+
+        {/* ALL PAGES */}
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/jobs" element={<JobMatchPage />} />
+          <Route path="/interview" element={<InterviewPage />} />
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+
+        <FloatingChat />
+      </BrowserRouter>
+    </ResumeProvider>
   );
 }
 
