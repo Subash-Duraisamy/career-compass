@@ -285,3 +285,224 @@ body {
   padding: 10px;
 }
 
+.rewrite-btn {
+  padding: 10px 16px;
+  margin-left: 10px;
+  background: #8b5cf6;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.rewrite-btn:hover {
+  background: #7c3aed;
+}
+
+.rewritten-box {
+  white-space: pre-wrap;
+  background: black;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+/* Roadmap Page Styling */
+.roadmap-page {
+  padding-bottom: 40px;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 800;
+  margin-top: 20px;
+}
+
+.page-subtext {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.result-card {
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  color: black;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Project Grid */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.project-box {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 18px;
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+.project-box:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.project-box h3 {
+  margin-bottom: 10px;
+}
+
+.project-box ul {
+  padding-left: 18px;
+}
+
+/* ===============================
+   PROJECT RECOMMENDATION SECTION
+   =============================== */
+
+.project-section {
+  margin-top: 40px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 22px;
+  margin-top: 20px;
+}
+
+.project-box {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 22px;
+  border-radius: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  transition: all 0.28s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover Glow Effect */
+.project-box:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* Highlighted Title */
+.project-box h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #9fe3ff; /* Light blue glow */
+}
+
+/* Description Text */
+.project-box p {
+  margin: 6px 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+/* 'What You Will Learn' heading */
+.project-box h4 {
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #ffd36b; /* Gold theme */
+}
+
+/* Learnings bullet list */
+.project-box ul {
+  padding-left: 18px;
+}
+
+.project-box ul li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  opacity: 0.9;
+  list-style-type: "✨ "; /* custom icon */
+  padding-left: 3px;
+}
+
+/* Add animated border shine */
+.project-box::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.project-box:hover::after {
+  opacity: 1;
+}
+.resume-actions {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.upload-label {
+  background: #4a90e2;
+  padding: 10px 16px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.upload-label input {
+  display: none;
+}
+
+.uploaded-resume-box {
+  background: #f3f3f3;
+  padding: 10px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.remove-btn {
+  background: #ff4d4d;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.remove-btn:hover {
+  background: #d93636;
+}
+
+.file-icon {
+  font-size: 22px;
+}

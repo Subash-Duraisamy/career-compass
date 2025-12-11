@@ -2,7 +2,7 @@ import axios from "axios";
 import { storeResumeChunks, searchResume } from "../rag.js";
 
 /**
- * Analyze Resume with RAG (Local Embeddings + OpenRouter LLM)
+ * Analyze Resume with RAG + Multi Score Breakdown
  */
 export const analyzeResume = async (req, res) => {
   const { resumeText, company } = req.body;
@@ -20,39 +20,48 @@ export const analyzeResume = async (req, res) => {
     console.log("📌 Retrieving relevant chunks for:", company);
     const relevantChunks = await searchResume(company, 5);
 
-    // SAFETY FIX ⭐ prevents undefined.map error
     if (!Array.isArray(relevantChunks) || relevantChunks.length === 0) {
       console.log("⚠️ No relevant resume chunks found!");
 
       return res.json({
         matchScore: 2,
+        technicalSkills: 2,
+        softSkills: 2,
+        experienceScore: 2,
+        projectQuality: 2,
+        atsScore: 2,
         missingSkills: ["Not enough resume information"],
         strengths: [],
         tip: "Add more detailed work experience and achievements.",
       });
     }
 
-    console.log("📌 Retrieved Chunks:", relevantChunks.length);
-
-    // ----------- RAG Prompt -----------
+    // -----------------------------
+    // Updated RAG-powered prompt
+    // -----------------------------
     const prompt = `
-You are an expert ATS + HR evaluator.
+You are an ATS + Hiring Expert. 
+Analyze the resume sections below ONLY:
 
-Company: ${company}
+${relevantChunks.map((c) => "• " + c).join("\n")}
 
-Relevant extracted resume sections:
-${relevantChunks.map(c => "• " + c).join("\n")}
+Return STRICT JSON ONLY in this format:
 
-Return STRICT JSON ONLY:
 {
-  "matchScore": number,
+  "matchScore": number,               // 1–10
+  "technicalSkills": number,          // 1–10
+  "softSkills": number,               // 1–10
+  "experienceScore": number,          // 1–10
+  "projectQuality": number,           // 1–10
+  "atsScore": number,                 // 1–10
   "missingSkills": ["skill1", "skill2"],
   "strengths": ["point1", "point2"],
   "tip": "one improvement tip"
 }
+
+Do NOT include any text outside JSON.
 `;
 
-    // ----------- OpenRouter API Call -----------
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -70,7 +79,6 @@ Return STRICT JSON ONLY:
       }
     );
 
-    // ----------- Cleanup Output -----------
     let raw = response.data.choices[0].message.content;
     raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
 
@@ -79,7 +87,7 @@ Return STRICT JSON ONLY:
     try {
       parsed = JSON.parse(raw);
     } catch (err) {
-      console.error("❌ JSON Parse Failed — Raw Output:", raw);
+      console.error("❌ JSON Parse Failed:", raw);
       return res.status(500).json({ error: "Failed to parse AI response" });
     }
 

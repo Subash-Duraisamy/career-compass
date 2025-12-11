@@ -1,5 +1,10 @@
 import axios from "axios";
+import { storeResumeChunks, searchResume } from "../rag.js";
 
+/**
+ * Job Match AI with RAG
+ * Generates 5 job recommendations using retrieved resume chunks
+ */
 export const jobMatchAI = async (req, res) => {
   const { resumeText } = req.body;
 
@@ -8,37 +13,81 @@ export const jobMatchAI = async (req, res) => {
   }
 
   try {
+    // -----------------------------
+    // RAG STEP 1: Store resume into vector database
+    // -----------------------------
+    await storeResumeChunks(resumeText);
+
+    // -----------------------------
+    // RAG STEP 2: Retrieve most important topics
+    // We will search using different job-related queries to get diverse context
+    // -----------------------------
+    const queries = [
+      "software engineering",
+      "data science",
+      "web development",
+      "AI and machine learning",
+      "business analyst",
+      "cloud computing",
+      "cyber security"
+    ];
+
+    let retrieved = [];
+
+    for (let q of queries) {
+      const chunks = await searchResume(q, 3);
+      retrieved.push(...chunks);
+    }
+
+    // Remove duplicates
+    retrieved = [...new Set(retrieved)];
+
+    console.log("📌 Retrieved Resume Chunks for Job Match:", retrieved.length);
+
+    if (retrieved.length === 0) {
+      retrieved = ["No strong resume signals found. Candidate may need more detail."];
+    }
+
+    // -----------------------------
+    // Prepare Final RAG Context
+    // -----------------------------
+    const context = retrieved.map(c => "• " + c).join("\n");
+
+    // -----------------------------
+    // LLM Prompt
+    // -----------------------------
     const prompt = `
-Analyze the following resume and generate EXACTLY 5 JOB OPTIONS in India.
+You are an expert career advisor & job recommender.
 
-Return ONLY a RAW JSON ARRAY.  
-NO explanation.  
-NO intro text.  
-NO sentences before or after the JSON.  
-Example format ONLY:
+Using ONLY this extracted resume information:
 
-[
-  {
-    "title": "",
-    "matchScore": number,
-    "reason": "",
-    "missingSkills": [],
-    "recommendedCertifications": [],
-    "salaryPrediction": ""
-  }
-]
+${context}
 
-RULES:
-- "matchScore" must be a number between 1 and 10 ONLY.
-- Salary must be in INR (LPA format).
-- ABSOLUTELY NO TEXT OUTSIDE THE JSON ARRAY.
+Generate EXACTLY 5 JOB MATCH OPTIONS (India region).
 
-Resume:
-${resumeText}
+STRICT RULES:
+- Return ONLY a RAW JSON ARRAY, nothing else.
+- Each job must follow this structure:
+
+{
+  "title": "",
+  "matchScore": number,          // 1 to 10 only
+  "reason": "",
+  "missingSkills": [],
+  "recommendedCertifications": [],
+  "salaryPrediction": "X - Y LPA"
+}
+
+NO sentences before or after the JSON.
+NO explanations.
+NO markdown.
+
+Start output with [
+End with ]
 `;
 
     // -----------------------------
-    // OpenRouter Request
+    // OpenRouter API Request
     // -----------------------------
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -57,25 +106,21 @@ ${resumeText}
       }
     );
 
+    // -----------------------------
+    // Clean Output
+    // -----------------------------
     let raw = response.data.choices[0].message.content.trim();
-
-    // Remove Markdown wrappers
     raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
 
-    // -----------------------------
-    // SAFELY Extract JSON Array
-    // -----------------------------
-    const match = raw.match(/\[[\s\S]*\]/); // Extract content inside [...]
+    const match = raw.match(/\[[\s\S]*\]/);
     if (!match) {
-      console.error("AI Output (invalid):", raw);
+      console.error("❌ Invalid AI Output:", raw);
       return res.status(500).json({
-        error: "AI returned invalid JSON, no array found.",
+        error: "AI returned invalid JSON structure.",
       });
     }
 
-    const cleanJSON = match[0];
-
-    const jobs = JSON.parse(cleanJSON);
+    const jobs = JSON.parse(match[0]);
 
     return res.json({ jobs });
 

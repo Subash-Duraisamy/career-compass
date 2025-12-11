@@ -1,21 +1,60 @@
 import axios from "axios";
+import { storeResumeChunks, searchResume } from "../rag.js";
 
 /* ============================================================
-   START INTERVIEW  →  Returns FIRST question
-   ============================================================ */
+   SAFE JSON CLEANER
+============================================================ */
+function extractCleanJSON(text) {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+
+  try {
+    let json = match[0]
+      .replace(/,\s*}/g, "}")
+      .replace(/,\s*]/g, "]");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+/* ============================================================
+   START INTERVIEW (Difficulty + Timer + RAG)
+============================================================ */
 export const startInterview = async (req, res) => {
-  const { role } = req.body;
+  const { role, resumeText, difficulty } = req.body;
 
   if (!role) {
     return res.status(400).json({ error: "Role required" });
   }
 
+  const level = difficulty || "easy";
+
   try {
+    let context = "No resume context available.";
+
+    // RAG enhance questions if resume is available
+    if (resumeText) {
+      await storeResumeChunks(resumeText);
+      const relevant = await searchResume(role, 5);
+      if (Array.isArray(relevant) && relevant.length > 0) {
+        context = relevant.map((c) => "• " + c).join("\n");
+      }
+    }
+
     const prompt = `
-You are an expert interviewer for the role: "${role}".
-Ask ONLY the FIRST interview question.
-Do NOT add explanations.
-Return just the question.
+You are an expert interviewer for the job role: "${role}".
+Ask ONLY ONE interview question based on the difficulty level.
+
+Difficulty Rules:
+- EASY → basic conceptual questions
+- MEDIUM → scenario-based questions
+- HARD → deep technical / system design / real SDE questions
+
+Candidate Context:
+${context}
+
+Return ONLY the question text.
 `;
 
     const response = await axios.post(
@@ -23,21 +62,30 @@ Return just the question.
       {
         model: "meta-llama/llama-3.1-70b-instruct",
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.5,
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "Career Compass AI"
         },
       }
     );
 
     const question = response.data.choices[0].message.content.trim();
 
-    return res.json({ question, index: 1, score: 0 });
+    // Question timer by difficulty
+    const timer =
+      level === "easy" ? 45 :
+      level === "medium" ? 90 :
+      150; // hard
+
+    return res.json({
+      question,
+      index: 1,
+      score: 0,
+      difficulty: level,
+      timer,
+    });
 
   } catch (err) {
     console.error("Interview Start Error:", err.response?.data || err.message);
@@ -45,39 +93,34 @@ Return just the question.
   }
 };
 
-
-
 /* ============================================================
-   CLEAN JSON FUNCTION
-   Extracts & fixes JSON from messy AI output
-   ============================================================ */
-function extractCleanJSON(text) {
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("No JSON found in AI response");
-
-  let json = match[0];
-
-  json = json.replace(/,\s*}/g, "}")
-             .replace(/,\s*]/g, "]");
-
-  return JSON.parse(json);
-}
-
-
-
-/* ============================================================
-   EVALUATE ANSWER  →  Returns feedback + next question + grading
-   ============================================================ */
+   EVALUATE ANSWER (Difficulty Preserved + RAG Context)
+============================================================ */
 export const evaluateAnswer = async (req, res) => {
-  const { question, userAnswer, role, index, score } = req.body;
+  const { question, userAnswer, role, index, score, difficulty } = req.body;
 
   if (!question || !userAnswer) {
     return res.status(400).json({ error: "Missing question or answer" });
   }
 
   try {
+    const r1 = await searchResume(role, 3) || [];
+    const r2 = await searchResume(question, 3) || [];
+    const r3 = await searchResume(userAnswer, 3) || [];
+
+    const combined = [...r1, ...r2, ...r3];
+    const unique = [...new Set(combined)];
+
+    const context =
+      unique.length > 0
+        ? unique.map((c) => "• " + c).join("\n")
+        : "No resume context available.";
+
     const prompt = `
-Evaluate the candidate's answer for the role: "${role}"
+Evaluate this candidate answer for the role "${role}".
+
+CONTEXT:
+${context}
 
 QUESTION:
 ${question}
@@ -85,18 +128,15 @@ ${question}
 ANSWER:
 ${userAnswer}
 
-Now return STRICT JSON only:
-
+Return STRICT JSON ONLY:
 {
   "feedback": {
-      "strengths": "text",
-      "weaknesses": "text"
+    "strengths": "text",
+    "weaknesses": "text"
   },
   "score": number,
-  "nextQuestion": "another interview question for ${role}"
+  "nextQuestion": "next interview question"
 }
-
-NO extra words. ONLY clean JSON.
 `;
 
     const response = await axios.post(
@@ -104,50 +144,52 @@ NO extra words. ONLY clean JSON.
       {
         model: "meta-llama/llama-3.1-70b-instruct",
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "Career Compass AI"
         },
       }
     );
 
-    let raw = response.data.choices[0].message.content.trim();
+    const clean = extractCleanJSON(response.data.choices[0].message.content);
+    if (!clean) {
+      return res.status(500).json({ error: "AI returned invalid JSON" });
+    }
 
-    const data = extractCleanJSON(raw);
+    const updatedScore = score + (clean.score || 0);
 
-    // Update score
-    const updatedScore = score + (data.score || 0);
-
-    /* FINAL ROUND COMPLETED → RETURN FINAL REPORT */
+    // If interview completed
     if (index >= 5) {
       return res.json({
         finished: true,
         finalScore: Math.round(updatedScore / 5),
-        summary: data.feedback,
-        recommendation: data.nextQuestion
+        summary: clean.feedback,
+        recommendation: clean.nextQuestion,
       });
     }
 
-    /* CONTINUE TO NEXT QUESTION */
+    const timer =
+      difficulty === "easy" ? 45 :
+      difficulty === "medium" ? 90 :
+      150;
+
     return res.json({
       finished: false,
-      nextQuestion: data.nextQuestion,
-      feedback: data.feedback,
+      nextQuestion: clean.nextQuestion,
+      feedback: clean.feedback,
       index: index + 1,
-      score: updatedScore
+      score: updatedScore,
+      difficulty,
+      timer,
     });
 
   } catch (err) {
-    console.error("Interview Eval Error:", err.response?.data || err.message);
-
+    console.error("Eval Error:", err.response?.data || err.message);
     return res.status(500).json({
-      error: "AI returned invalid JSON",
-      details: err.message
+      error: "Evaluation failed",
+      details: err.message,
     });
   }
 };

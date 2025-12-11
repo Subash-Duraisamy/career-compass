@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import RoadmapPage from "./pages/RoadmapPage";
 
 import Main from "./pages/Main";
 import Chat from "./pages/Chat";
@@ -23,6 +24,9 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/jobs" element={<JobMatchPage />} />
           <Route path="/interview" element={<InterviewPage />} />
+
+<Route path="/roadmap" element={<RoadmapPage />} />
+
           <Route path="/chat" element={<Chat />} />
         </Routes>
 

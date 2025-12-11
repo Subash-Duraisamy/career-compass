@@ -10,7 +10,9 @@ function Navbar() {
         <a href="/">Home</a>
         <a href="/jobs">Jobs</a>
         <a href="/interview">Interview</a>
+        <a href="/roadmap">Roadmap</a> 
         <a href="/chat">Chat</a>
+
       </div>
     </div>
   );

@@ -19,7 +19,19 @@ export const extractText = async (req, res) => {
       pdfData.Pages.forEach((page) => {
         page.Texts.forEach((textObj) => {
           textObj.R.forEach((r) => {
-            finalText += decodeURIComponent(r.T) + " ";
+            // finalText += decodeURIComponent(r.T) + " ";
+            let text = r.T;
+
+// FIX malformed UTF strings
+try {
+  text = decodeURIComponent(escape(text));
+} catch (e) {
+  // fallback: remove invalid characters
+  text = text.replace(/[^\x00-\x7F]/g, "");
+}
+
+finalText += text + " ";
+
           });
         });
         finalText += "\n";
