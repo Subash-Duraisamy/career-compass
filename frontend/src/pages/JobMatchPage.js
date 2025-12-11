@@ -1,44 +1,59 @@
 import React, { useContext } from "react";
+import { motion } from "framer-motion";
 import { ResumeContext } from "../context/ResumeContext";
 import JobMatch from "../components/JobMatch";
 import Illustration from "../assets/career.svg";
-import "../index.css";
+import "../components/JobMatch.css";
 
 function JobMatchPage() {
   const { resumeText } = useContext(ResumeContext);
 
   return (
-    <div className="page-wrapper">
+    <div className="job-page-wrapper">
 
-      {/* FIXED NAVBAR APPEARS AUTOMATICALLY */}
-
-      <div className="landing-container">
-        
-        <div className="hero-left">
-          <h1 className="hero-title">
-            Discover the Best Jobs <br />
-            <span className="highlight">Matched to Your Resume</span>
+      {/* HERO SECTION */}
+      <motion.div 
+        className="job-hero"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        <div className="job-hero-left">
+          <h1 className="job-title">
+            Find The Best Career Roles  
+            <span className="job-highlight"> Tailored For You</span>
           </h1>
 
-          <p className="hero-subtitle">
-            AI analyzes your resume and shows the top job roles you qualify for,
-            along with salaries & required skills.
+          <p className="job-subtitle">
+            Our advanced AI analyzes your resume and provides the most accurate  
+            job recommendations with salary predictions & missing skills.
           </p>
 
-          {!resumeText ? (
-            <p style={{ color: "red", fontSize: "16px" }}>
-              ⚠ Please upload your resume from Home page first.
-            </p>
-          ) : (
-            <JobMatch resumeText={resumeText} />
+          {!resumeText && (
+            <p className="job-warning">⚠ Upload your resume in Resume Analyzer first.</p>
           )}
         </div>
 
-        <div className="hero-right">
-          <img src={Illustration} className="hero-illustration" alt="" />
-        </div>
+        <motion.div 
+          className="job-hero-right"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <img src={Illustration} className="job-illustration" alt="Illustration" />
+        </motion.div>
+      </motion.div>
 
-      </div>
+      {/* JOB MATCH SECTION */}
+      <motion.div
+        className="job-results-section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.7 }}
+      >
+        {resumeText ? <JobMatch resumeText={resumeText} /> : null}
+      </motion.div>
+
     </div>
   );
 }

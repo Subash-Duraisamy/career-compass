@@ -1,30 +1,39 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import "../index.css";
 import jsPDF from "jspdf";
+import "../index.css";
 
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ResumeContext } from "../context/ResumeContext";
+
 import CompanyDropdown from "../components/CompanyDropdown";
 import MatchScoreChart from "../components/MatchScoreChart";
 import RadarScoreChart from "../components/RadarScoreChart";
 
 import Illustration from "../assets/career.svg";
 
-function Main() {
+function ResumeAnalyzer() {
   const { resumeText, setResumeText } = useContext(ResumeContext);
 
   const [resumeFile, setResumeFile] = useState(null);
   const [company, setCompany] = useState("");
   const [result, setResult] = useState(null);
-  const [rewrittenResume, setRewrittenResume] = useState(null); // ⭐ NEW
+  const [rewrittenResume, setRewrittenResume] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ============================
-  // AUTO RESUME TEXT EXTRACTION
-  // ============================
+  /* PARALLAX */
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 300], [0, -50]);
+  const imageY = useTransform(scrollY, [0, 300], [0, -30]);
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  /* Upload Resume */
   const uploadResumeAuto = async (file) => {
     if (!file) return;
-
     const formData = new FormData();
     formData.append("resume", file);
 
@@ -32,19 +41,15 @@ function Main() {
     try {
       const res = await axios.post("http://localhost:5000/api/upload", formData);
       setResumeText(res.data.text);
-    } catch (err) {
+    } catch {
       alert("Resume extraction failed!");
     }
     setLoading(false);
   };
 
-  // ============================
-  // ANALYZE RESUME
-  // ============================
+  /* Analyze Resume */
   const analyze = async () => {
-    if (!resumeText || !company) {
-      return alert("Upload resume + select a company first");
-    }
+    if (!resumeText || !company) return alert("Upload resume + select a company");
 
     setLoading(true);
     try {
@@ -52,20 +57,17 @@ function Main() {
         resumeText,
         company,
       });
+
       setResult(res.data);
-    } catch (err) {
+    } catch {
       alert("AI analysis failed");
     }
     setLoading(false);
   };
 
-  // ============================
-  // ⭐ AI REWRITE RESUME
-  // ============================
+  /* AI Rewrite */
   const rewriteResumeAI = async () => {
-    if (!resumeText || !company) {
-      return alert("Upload resume + select a company!");
-    }
+    if (!resumeText || !company) return alert("Upload resume + select company");
 
     setLoading(true);
     try {
@@ -75,55 +77,45 @@ function Main() {
       });
 
       setRewrittenResume(res.data.rewritten);
-    } catch (err) {
-      alert("Rewrite failed!");
+    } catch {
+      alert("Rewrite failed");
     }
-
     setLoading(false);
   };
 
-  // ============================
-  // DOWNLOAD FILE
-  // ============================
+  /* Download PDF */
   const downloadRewritten = () => {
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "pt",
-    format: "a4",
-  });
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const maxWidth = 520;
 
-  const text = rewrittenResume;
-  const marginLeft = 40;
-  const marginTop = 40;
-  const lineHeight = 18;
-  const maxWidth = 520;
-
-  const lines = doc.splitTextToSize(text, maxWidth);
-  doc.text(lines, marginLeft, marginTop);
-
-  doc.save(`Rewritten_${company}_Resume.pdf`);
-};
+    const lines = doc.splitTextToSize(rewrittenResume, maxWidth);
+    doc.text(lines, 40, 40);
+    doc.save(`Rewritten_${company}_Resume.pdf`);
+  };
 
   return (
     <div className="page-wrapper">
 
-      {/* ============================
-          HERO SECTION
-      ============================ */}
+      {/* HERO SECTION */}
       <div className="landing-container">
 
-        <div className="hero-left">
+        {/* LEFT */}
+        <motion.div
+          className="hero-left"
+          style={{ y: heroY }}
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <h1 className="hero-title">
-            Revolutionize Your Career With <br />
-            <span className="highlight">AI Resume Intelligence</span>
+            AI Resume <span className="highlight">Analyzer & Rewriter</span>
           </h1>
 
           <p className="hero-subtitle">
-            Upload your resume, choose your target company, and instantly get
-            match scores, strengths, missing skills, improvement tips, & AI rewritten resumes.
+            Upload your resume → choose target company → get ATS score, skills
+            match, insights, and AI-powered rewrite.
           </p>
 
-          {/* Upload Box */}
           <div className="upload-box">
             <label className="upload-label">
               Choose File
@@ -142,50 +134,50 @@ function Main() {
               Process
             </button>
 
-            {/* ⭐ NEW REWRITE BUTTON */}
             <button className="rewrite-btn" onClick={rewriteResumeAI}>
               ✨ AI Rewrite
             </button>
           </div>
 
-          {/* Uploaded File Name */}
           {resumeFile && (
             <div className="uploaded-file-box">
               <span className="file-icon">📄</span>
-              <span className="file-name">{resumeFile.name}</span>
+              <span>{resumeFile.name}</span>
             </div>
           )}
 
-          {/* Company Dropdown */}
           <div className="company-row">
             <span className="company-title">Select a Company:</span>
-
-            <div className="company-select">
-              <CompanyDropdown selected={company} setSelected={setCompany} />
-            </div>
+            <CompanyDropdown selected={company} setSelected={setCompany} />
           </div>
 
-          {loading && <p className="loading-text">Processing… please wait</p>}
-        </div>
+          {loading && <p className="loading-text">Processing...</p>}
+        </motion.div>
 
-        {/* Illustration */}
-        <div className="hero-right">
-          <img src={Illustration} alt="AI" className="hero-illustration" />
-        </div>
-
+        {/* RIGHT */}
+        <motion.div
+          className="hero-right"
+          style={{ y: imageY }}
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <img src={Illustration} className="hero-illustration" alt="AI Resume" />
+        </motion.div>
       </div>
 
-      {/* ============================
-          RESULT SECTION
-      ============================ */}
+      {/* RESULT SECTION */}
       {result && (
-        <div className="result-card">
-
-          {/* Match Score */}
+        <motion.div
+          className="analyzer-card"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+        >
           <h2>Match Score: {result.matchScore}/10</h2>
+
           <MatchScoreChart score={result.matchScore} />
 
-          {/* Score Radar Breakdown */}
           <h3>Resume Score Breakdown</h3>
 
           <RadarScoreChart
@@ -196,7 +188,7 @@ function Main() {
             ats={result.atsScore}
           />
 
-          <div className="score-grid">
+          <div className="analyzer-score-grid">
             <p>Technical Skills: {result.technicalSkills}/10</p>
             <p>Soft Skills: {result.softSkills}/10</p>
             <p>Experience: {result.experienceScore}/10</p>
@@ -204,42 +196,41 @@ function Main() {
             <p>ATS Score: {result.atsScore}/10</p>
           </div>
 
-          {/* Strengths */}
           <h3>Strengths</h3>
           {result.strengths.map((s, i) => (
-            <div key={i} className="strength-box">{s}</div>
+            <div key={i} className="analyzer-strength">{s}</div>
           ))}
 
-          {/* Missing Skills */}
           <h3>Missing Skills</h3>
           {result.missingSkills.map((m, i) => (
-            <div key={i} className="missing-box">{m}</div>
+            <div key={i} className="analyzer-missing">{m}</div>
           ))}
 
-          {/* Improvement Tip */}
           <h3>Improvement Tip</h3>
-          <div className="tip-box">{result.tip}</div>
-
-        </div>
+          <div className="analyzer-tip">{result.tip}</div>
+        </motion.div>
       )}
 
-      {/* ============================
-          ⭐ REWRITTEN RESUME SECTION
-      ============================ */}
+      {/* REWRITTEN RESUME */}
       {rewrittenResume && (
-        <div className="result-card">
+        <motion.div
+          className="result-card"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <h2>✨ AI-Rewritten Resume for {company}</h2>
 
-          <pre className="rewritten-box">{rewrittenResume}</pre>
+          <pre className="analyzer-rewrite">{rewrittenResume}</pre>
 
           <button className="process-btn" onClick={downloadRewritten}>
             ⬇ Download Rewritten Resume
           </button>
-        </div>
+        </motion.div>
       )}
 
     </div>
   );
 }
 
-export default Main;
+export default ResumeAnalyzer;

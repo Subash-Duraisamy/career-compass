@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import "../index.css";
+import { motion } from "framer-motion";
 import "../components/RoadmapPage.css";
 
 import { ResumeContext } from "../context/ResumeContext";
@@ -60,7 +60,7 @@ function RoadmapPage() {
         ];
         setProjects(merged);
       }
-    } catch (err) {
+    } catch {
       alert("AI failed to generate roadmap!");
     }
 
@@ -71,16 +71,26 @@ function RoadmapPage() {
     <div className="roadmap-wrapper">
 
       {/* HEADER */}
-      <div className="roadmap-header">
+      <motion.div
+        className="roadmap-header"
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <h1 className="roadmap-title">AI Roadmap & Project Mentor</h1>
         <p className="roadmap-sub">
           Get a personalized learning roadmap & industry-ready project ideas based on <br />
           your resume strengths.
         </p>
-      </div>
+      </motion.div>
 
       {/* UPLOAD BOX */}
-      <div className="resume-upload-box">
+      <motion.div
+        className="resume-upload-box"
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         {!resumeText ? (
           <label className="upload-btn">
             📄 Upload Resume
@@ -100,31 +110,52 @@ function RoadmapPage() {
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
 
-      {/* ACTION BUTTON */}
-      <button className="generate-roadmap-btn" onClick={generateRoadmap}>
+      {/* Generate Button */}
+      <motion.button
+        className="generate-roadmap-btn"
+        onClick={generateRoadmap}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
         Generate Roadmap 🚀
-      </button>
+      </motion.button>
 
       {loading && <p className="loading-txt">⏳ AI is analyzing your resume…</p>}
 
       {/* ROADMAP SECTION */}
       {roadmap?.length > 0 && (
-        <div className="glass-card roadmap-display">
+        <motion.div
+          className="glass-card roadmap-display"
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <h2 className="section-heading">📌 Your Learning Roadmap</h2>
           <WavyRoadmap roadmap={roadmap} />
-        </div>
+        </motion.div>
       )}
 
       {/* PROJECT SECTION */}
       {projects?.length > 0 && (
-        <div className="glass-card projects-container">
+        <motion.div
+          className="glass-card projects-container"
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <h2 className="section-heading">💡 Recommended Projects</h2>
 
           <div className="project-grid">
             {projects.map((p, i) => (
-              <div key={i} className="project-card">
+              <motion.div
+                key={i}
+                className="project-card"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+              >
                 <h3 className="project-title">{p.name}</h3>
 
                 <p><b>Problem:</b> {p.problem}</p>
@@ -137,12 +168,11 @@ function RoadmapPage() {
                     <li key={j}>{skill}</li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
-
     </div>
   );
 }

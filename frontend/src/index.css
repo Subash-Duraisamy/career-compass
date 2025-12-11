@@ -526,3 +526,318 @@ body {
   border-bottom: 2px solid #60a5fa; /* underline indicator */
   font-weight: 700;                 /* bold for active state */
 }
+
+
+/* ================================
+   ANIMATION UTILITIES FOR FRAMER MOTION + PARALLAX
+   ================================ */
+
+/* Smooth fade-in animation */
+.fade-in {
+  opacity: 0;
+  animation: fadeInSmooth 0.8s ease forwards;
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth slide-up on scroll */
+.slide-up {
+  opacity: 0;
+  animation: slideUpSmooth 0.8s ease forwards;
+}
+
+@keyframes slideUpSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* Smooth slide-left */
+.slide-left {
+  opacity: 0;
+  animation: slideLeftSmooth 0.8s ease forwards;
+}
+
+@keyframes slideLeftSmooth {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+/* Smooth slide-right */
+.slide-right {
+  opacity: 0;
+  animation: slideRightSmooth 0.8s ease forwards;
+}
+
+@keyframes slideRightSmooth {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+/* Parallax soft float effect (for images) */
+.parallax-float {
+  animation: floatParallax 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatParallax {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-16px);
+  }
+}
+
+/* Soft fade + slight scale reveal */
+.reveal-card {
+  opacity: 0;
+  animation: revealCard 0.9s ease forwards;
+}
+
+@keyframes revealCard {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+/* HOME PAGE */
+.home-wrapper {
+  padding-top: 100px;
+  text-align: center;
+  color: white;
+}
+
+.home-hero {
+  margin-bottom: 40px;
+}
+
+.home-title {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.home-sub {
+  margin-top: 10px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.home-cta-btn {
+  margin-top: 20px;
+  background: #2563eb;
+  padding: 12px 28px;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.home-cta-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-3px);
+}
+
+/* FEATURES */
+.feature-section {
+  margin-top: 60px;
+}
+
+.feature-heading {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  padding: 0 60px;
+}
+
+.feature-card {
+  padding: 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  transition: 0.25s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.15);
+}
+
+.feature-icon {
+  width: 55px;
+  margin-bottom: 12px;
+}
+
+.active-link {
+  color: #60a5fa !important;
+  font-weight: bold;
+}
+
+/* ================================
+   RESUME ANALYZER – RESULT CARD FIX
+================================ */
+
+/* Wrapper only for analysis page results */
+.analyzer-card {
+  width: 75%;
+  margin: 50px auto;
+  padding: 30px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.45);
+  color: #e2e8f0 !important;
+  animation: fadeInSmooth 0.8s ease;
+}
+
+/* Headings */
+.analyzer-card h2,
+.analyzer-card h3 {
+  color: #93c5fd;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* Score grid formatting */
+.analyzer-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.analyzer-score-grid p {
+  background: rgba(148, 163, 184, 0.12);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* Strength / Missing / Tip Boxes */
+.analyzer-strength {
+  background: rgba(34, 197, 94, 0.25);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.analyzer-missing {
+  background: rgba(239, 68, 68, 0.25);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.analyzer-tip {
+  background: rgba(234, 179, 8, 0.25);
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+  color: #fef3c7;
+  font-weight: 600;
+}
+
+/* Rewritten resume box */
+.analyzer-rewrite {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #334155;
+  padding: 20px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  margin-bottom: 15px;
+  color: #f8fafc;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ======================================
+   JOB MATCH PAGE ANIMATIONS (SAFE)
+====================================== */
+
+/* Fade-in animation */
+.job-fade-in {
+  opacity: 0;
+  animation: jobFadeIn 0.9s ease forwards;
+}
+
+@keyframes jobFadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Slide-up animation */
+.job-slide-up {
+  opacity: 0;
+  animation: jobSlideUp 0.9s ease forwards;
+}
+
+@keyframes jobSlideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Parallax float animation for illustration */
+.job-float {
+  animation: jobFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes jobFloat {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-16px); }
+}
+
+/* Soft reveal for job match results */
+.job-reveal-card {
+  opacity: 0;
+  animation: jobReveal 0.9s ease forwards;
+}
+
+@keyframes jobReveal {
+  from { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
