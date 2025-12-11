@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 
 export const jobMatchAI = async (req, res) => {
   const { resumeText } = req.body;
@@ -8,53 +8,79 @@ export const jobMatchAI = async (req, res) => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const prompt = `
+Analyze the following resume and generate EXACTLY 5 JOB OPTIONS in India.
 
-const prompt = `
-Analyze this resume and generate the top 5 most suitable jobs.
+Return ONLY a RAW JSON ARRAY.  
+NO explanation.  
+NO intro text.  
+NO sentences before or after the JSON.  
+Example format ONLY:
 
-For EACH job, return JSON STRICTLY in this format:
-
-{
-  "title": "",
-  "matchScore": number,  // MUST be a number from 1 to 10 ONLY (no % or text)
-  "reason": "",
-  "missingSkills": [],
-  "recommendedCertifications": [],
-  "salaryPrediction": ""
-}
+[
+  {
+    "title": "",
+    "matchScore": number,
+    "reason": "",
+    "missingSkills": [],
+    "recommendedCertifications": [],
+    "salaryPrediction": ""
+  }
+]
 
 RULES:
-- "matchScore" must be ONLY a number between 1 and 10.
-- DO NOT return percentages.
-- DO NOT add "/10".
-- DO NOT add "%" symbols.
-- If unsure, choose a number between 1–10.
-
-Salary must be in INR (LPA format) only.
+- "matchScore" must be a number between 1 and 10 ONLY.
+- Salary must be in INR (LPA format).
+- ABSOLUTELY NO TEXT OUTSIDE THE JSON ARRAY.
 
 Resume:
 ${resumeText}
-
-Return ONLY pure JSON array with 5 jobs.
 `;
 
+    // -----------------------------
+    // OpenRouter Request
+    // -----------------------------
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "meta-llama/llama-3.1-70b-instruct",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "Career Compass AI",
+        },
+      }
+    );
 
+    let raw = response.data.choices[0].message.content.trim();
 
-    const result = await model.generateContent(prompt);
-    let aiText = result.response.text();
+    // Remove Markdown wrappers
+    raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
 
-    aiText = aiText
-      .replace(/```json/gi, "")
-      .replace(/```/g, "")
-      .trim();
+    // -----------------------------
+    // SAFELY Extract JSON Array
+    // -----------------------------
+    const match = raw.match(/\[[\s\S]*\]/); // Extract content inside [...]
+    if (!match) {
+      console.error("AI Output (invalid):", raw);
+      return res.status(500).json({
+        error: "AI returned invalid JSON, no array found.",
+      });
+    }
 
-    const jobs = JSON.parse(aiText);
+    const cleanJSON = match[0];
 
-    res.json({ jobs });
+    const jobs = JSON.parse(cleanJSON);
+
+    return res.json({ jobs });
+
   } catch (err) {
-    console.error("AI Job Match Error:", err);
-    res.status(500).json({ error: "AI Job Matching Failed" });
+    console.error("AI Job Match Error:", err.response?.data || err.message);
+    return res.status(500).json({ error: "AI Job Matching Failed" });
   }
 };

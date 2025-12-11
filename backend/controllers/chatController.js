@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 
 export const chatAssistant = async (req, res) => {
   const { message } = req.body;
@@ -8,23 +8,38 @@ export const chatAssistant = async (req, res) => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const prompt = `
 You are an AI Career Assistant. 
 Give clear, friendly, helpful answers.
-No long paragraphs. Use bullet points when needed.
+Use simple sentences.
+Avoid long paragraphs.
+Use bullet points whenever helpful.
 
-User message: ${message}
-    `;
+User message: "${message}"
+`;
 
-    const response = await model.generateContent(prompt);
-    const reply = response.response.text();
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "meta-llama/llama-3.1-70b-instruct",   // FREE, STRONG, WORKS
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "Career Compass AI",
+        },
+      }
+    );
 
-    res.json({ reply });
+    const reply = response.data.choices[0].message.content;
+
+    return res.json({ reply });
   } catch (error) {
-    console.error("Chat Error:", error);
-    res.status(500).json({ error: "Failed to get AI response" });
+    console.error("Chat Error:", error.response?.data || error.message);
+    return res.status(500).json({ error: "Failed to get AI response" });
   }
 };

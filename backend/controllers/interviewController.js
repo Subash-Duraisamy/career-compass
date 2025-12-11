@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 
 /* ============================================================
    START INTERVIEW  →  Returns FIRST question
@@ -11,25 +11,40 @@ export const startInterview = async (req, res) => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const prompt = `
 You are an expert interviewer for the role: "${role}".
-Give ONLY the FIRST interview question.
-Do NOT include explanation. Only return the question text.
-    `;
+Ask ONLY the FIRST interview question.
+Do NOT add explanations.
+Return just the question.
+`;
 
-    const response = await model.generateContent(prompt);
-    const question = response.response.text().trim();
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "meta-llama/llama-3.1-70b-instruct",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.5,
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "Career Compass AI"
+        },
+      }
+    );
+
+    const question = response.data.choices[0].message.content.trim();
 
     return res.json({ question, index: 1, score: 0 });
 
   } catch (err) {
-    console.error("Interview Start Error:", err);
-    res.status(500).json({ error: "Failed to start interview" });
+    console.error("Interview Start Error:", err.response?.data || err.message);
+    return res.status(500).json({ error: "Failed to start interview" });
   }
 };
+
 
 
 /* ============================================================
@@ -37,13 +52,11 @@ Do NOT include explanation. Only return the question text.
    Extracts & fixes JSON from messy AI output
    ============================================================ */
 function extractCleanJSON(text) {
-  // Find JSON object in text
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("No JSON found in AI response");
 
   let json = match[0];
 
-  // Remove trailing commas
   json = json.replace(/,\s*}/g, "}")
              .replace(/,\s*]/g, "]");
 
@@ -63,9 +76,6 @@ export const evaluateAnswer = async (req, res) => {
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const prompt = `
 Evaluate the candidate's answer for the role: "${role}"
 
@@ -86,17 +96,32 @@ Now return STRICT JSON only:
   "nextQuestion": "another interview question for ${role}"
 }
 
-NO extra text. ONLY clean JSON.
+NO extra words. ONLY clean JSON.
 `;
 
-    const response = await model.generateContent(prompt);
-    let raw = response.response.text();
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "meta-llama/llama-3.1-70b-instruct",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "Career Compass AI"
+        },
+      }
+    );
 
-    // Clean JSON
+    let raw = response.data.choices[0].message.content.trim();
+
     const data = extractCleanJSON(raw);
 
     // Update score
-    let updatedScore = score + (data.score || 0);
+    const updatedScore = score + (data.score || 0);
 
     /* FINAL ROUND COMPLETED → RETURN FINAL REPORT */
     if (index >= 5) {
@@ -118,7 +143,7 @@ NO extra text. ONLY clean JSON.
     });
 
   } catch (err) {
-    console.error("Interview Eval Error:", err);
+    console.error("Interview Eval Error:", err.response?.data || err.message);
 
     return res.status(500).json({
       error: "AI returned invalid JSON",
