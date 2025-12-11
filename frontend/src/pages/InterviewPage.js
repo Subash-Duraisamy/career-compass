@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../index.css";
+import "../components/InterviewPage.css"; // ⭐ IMPORT CSS
 
 function InterviewPage() {
   const [role, setRole] = useState("");
@@ -19,29 +19,19 @@ function InterviewPage() {
 
   const [timeLeft, setTimeLeft] = useState(0);
 
-  /* =========================
-        Countdown Timer
-  ========================== */
+  /* TIMER */
   useEffect(() => {
     if (!started || timeLeft <= 0 || !question) return;
 
-    const t = setInterval(() => {
-      setTimeLeft((sec) => sec - 1);
-    }, 1000);
-
+    const t = setInterval(() => setTimeLeft((sec) => sec - 1), 1000);
     return () => clearInterval(t);
   }, [started, timeLeft, question]);
 
   useEffect(() => {
-    // Auto-submit when timer hits 0
-    if (timeLeft === 0 && started && question) {
-      submitAnswer();
-    }
+    if (timeLeft === 0 && started && question) submitAnswer();
   }, [timeLeft]);
 
-  /* =========================
-        START INTERVIEW
-  ========================== */
+  /* START INTERVIEW */
   const startInterview = async () => {
     if (!role) return alert("Please choose a role!");
 
@@ -67,17 +57,15 @@ function InterviewPage() {
     setLoading(false);
   };
 
-  /* =========================
-        SUBMIT ANSWER
-  ========================== */
+  /* SUBMIT ANSWER */
   const submitAnswer = async () => {
-    if (!userAnswer.trim()) userAnswer = "No answer provided";
+    let answer = userAnswer.trim() ? userAnswer : "No answer provided";
 
     setLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/api/interview/answer", {
         question,
-        userAnswer,
+        userAnswer: answer,
         role,
         index: round,
         score,
@@ -105,63 +93,66 @@ function InterviewPage() {
   };
 
   return (
-    <div className="container">
+    <div className="interview-page">
 
       {/* HEADER */}
-      <div className="hero-section">
+      <div className="interview-header">
         <h1>AI Mock Interview</h1>
-        <p>Practice technical, HR & SDE-level questions with instant feedback.</p>
+        <p>Practice real interview questions with instant AI feedback.</p>
       </div>
 
-      {/* ROLE + DIFFICULTY */}
-      <h3>Select Role</h3>
-      <select className="role-select" value={role} onChange={(e) => setRole(e.target.value)}>
-        <option value="">-- Choose Role --</option>
-        <option value="Frontend Developer">Frontend Developer</option>
-        <option value="Backend Developer">Backend Developer</option>
-        <option value="Full Stack Developer">Full Stack Developer</option>
-        <option value="Data Analyst">Data Analyst</option>
-        <option value="Cloud Engineer">Cloud Engineer</option>
-        <option value="Machine Learning Engineer">Machine Learning Engineer</option>
-      </select>
+      {/* ROLE & DIFFICULTY */}
+      <div className="selector-block">
+        <h3>Select Role</h3>
+        <select className="drop-select" value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="">-- Choose Role --</option>
+          <option value="Frontend Developer">Frontend Developer</option>
+          <option value="Backend Developer">Backend Developer</option>
+          <option value="Full Stack Developer">Full Stack Developer</option>
+          <option value="Data Analyst">Data Analyst</option>
+          <option value="Cloud Engineer">Cloud Engineer</option>
+          <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+        </select>
 
-      <h3>Select Difficulty</h3>
-      <select className="role-select" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard (Real SDE)</option>
-      </select>
+        <h3>Select Difficulty</h3>
+        <select className="drop-select" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard (Company SDE)</option>
+        </select>
 
-      {!started && (
-        <button className="process-btn" onClick={startInterview} style={{ marginTop: "12px" }}>
-          Start Interview
-        </button>
-      )}
+        {!started && (
+          <button className="start-btn" onClick={startInterview}>
+            Start Interview
+          </button>
+        )}
+      </div>
 
-      {loading && <p className="loading-text">⏳ AI Thinking…</p>}
+      {loading && <p className="loading">⏳ AI Thinking…</p>}
 
       {/* QUESTION CARD */}
       {started && question && (
-        <div className="result-card" style={{ marginTop: "20px" }}>
-
-          <h3>Question {round} / 5</h3>
-          <p className="timer-box">⏳ Time Left: {timeLeft}s</p>
+        <div className="question-card">
+          <div className="question-top">
+            <h3>Question {round} / 5</h3>
+            <span className="timer">⏳ {timeLeft}s</span>
+          </div>
 
           <p className="question-text">{question}</p>
 
           <textarea
-            className="answer-box"
-            placeholder="Write your answer..."
+            className="answer-input"
+            placeholder="Type your answer..."
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
-          ></textarea>
+          />
 
-          <button className="process-btn" onClick={submitAnswer}>
-            Submit Answer
+          <button className="submit-btn" onClick={submitAnswer}>
+            Submit
           </button>
 
           {feedback && (
-            <div className="tip-box">
+            <div className="feedback-box">
               <strong>Feedback:</strong>
               <p><b>✔ Strengths:</b> {feedback.strengths}</p>
               <p><b>⚠ Weaknesses:</b> {feedback.weaknesses}</p>
@@ -172,7 +163,7 @@ function InterviewPage() {
 
       {/* FINAL REPORT */}
       {finalReport && (
-        <div className="result-card" style={{ marginTop: "25px" }}>
+        <div className="final-card">
           <h2>🎉 Interview Complete!</h2>
           <h3>Final Score: {finalReport.finalScore}/10</h3>
 

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import "../index.css";
+import "../components/RoadmapPage.css";
 
 import { ResumeContext } from "../context/ResumeContext";
 import WavyRoadmap from "../components/WavyRoadmap";
@@ -13,12 +14,9 @@ function RoadmapPage() {
   const [projects, setProjects] = useState([]);
   const [resumeFile, setResumeFile] = useState(null);
 
-  // ==============================
-  // Upload resume (auto extract text)
-  // ==============================
+  // Upload Resume
   const uploadResume = async (file) => {
     if (!file) return;
-
     const formData = new FormData();
     formData.append("resume", file);
 
@@ -27,15 +25,13 @@ function RoadmapPage() {
       const res = await axios.post("http://localhost:5000/api/upload", formData);
       setResumeText(res.data.text);
       setResumeFile(file);
-    } catch (err) {
+    } catch {
       alert("Resume extraction failed!");
     }
     setLoading(false);
   };
 
-  // ==============================
-  // Remove Resume
-  // ==============================
+  // Remove resume
   const removeResume = () => {
     setResumeText("");
     setResumeFile(null);
@@ -43,9 +39,7 @@ function RoadmapPage() {
     setProjects([]);
   };
 
-  // ==============================
-  // Generate Roadmap & Projects
-  // ==============================
+  // Generate Roadmap
   const generateRoadmap = async () => {
     if (!resumeText) return alert("Please upload your resume first!");
 
@@ -58,7 +52,6 @@ function RoadmapPage() {
 
       setRoadmap(res.data.roadmap || []);
 
-      // Merge project categories into one list
       if (res.data.projects) {
         const merged = [
           ...(res.data.projects.easy || []),
@@ -68,86 +61,78 @@ function RoadmapPage() {
         setProjects(merged);
       }
     } catch (err) {
-      console.error(err);
-      alert("Unable to generate roadmap!");
+      alert("AI failed to generate roadmap!");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="container roadmap-page">
+    <div className="roadmap-wrapper">
 
-      <h1 className="page-title">AI Roadmap & Project Suggestions</h1>
-      <p className="page-subtext">
-        Personalized learning path and project suggestions based on your resume.
-      </p>
+      {/* HEADER */}
+      <div className="roadmap-header">
+        <h1 className="roadmap-title">AI Roadmap & Project Mentor</h1>
+        <p className="roadmap-sub">
+          Get a personalized learning roadmap & industry-ready project ideas based on <br />
+          your resume strengths.
+        </p>
+      </div>
 
-      {/* ==============================
-          RESUME UPLOAD / REMOVE SECTION
-      ============================== */}
-      <div className="resume-actions">
-
-        {/* If resume NOT uploaded → show upload */}
-        {!resumeText && (
-          <label className="upload-label">
-            Upload Resume
+      {/* UPLOAD BOX */}
+      <div className="resume-upload-box">
+        {!resumeText ? (
+          <label className="upload-btn">
+            📄 Upload Resume
             <input
               type="file"
               accept="application/pdf"
               onChange={(e) => uploadResume(e.target.files[0])}
             />
           </label>
-        )}
+        ) : (
+          <div className="resume-info-card">
+            <span className="resume-file-icon">📘</span>
+            <span className="resume-file-name">{resumeFile?.name}</span>
 
-        {/* If resume uploaded → show file + remove */}
-        {resumeText && (
-          <div className="uploaded-resume-box">
-            <span className="file-icon">📄</span>
-            <span className="file-name">{resumeFile?.name || "Resume Added"}</span>
-
-            <button className="remove-btn" onClick={removeResume}>
-              Remove Resume ❌
+            <button className="remove-resume-btn" onClick={removeResume}>
+              Remove ✖
             </button>
           </div>
         )}
       </div>
 
-      {/* Generate Roadmap Button */}
-      <button className="process-btn" onClick={generateRoadmap}>
-        Generate Roadmap
+      {/* ACTION BUTTON */}
+      <button className="generate-roadmap-btn" onClick={generateRoadmap}>
+        Generate Roadmap 🚀
       </button>
 
-      {loading && <p className="loading-text">⏳ AI is analyzing your resume…</p>}
+      {loading && <p className="loading-txt">⏳ AI is analyzing your resume…</p>}
 
-      {/* ==============================
-          ROADMAP SECTION
-      ============================== */}
-      {roadmap && roadmap.length > 0 && (
-        <div className="result-card roadmap-section">
-          <h2 className="section-title">Learning Roadmap</h2>
+      {/* ROADMAP SECTION */}
+      {roadmap?.length > 0 && (
+        <div className="glass-card roadmap-display">
+          <h2 className="section-heading">📌 Your Learning Roadmap</h2>
           <WavyRoadmap roadmap={roadmap} />
         </div>
       )}
 
-      {/* ==============================
-          PROJECT SUGGESTIONS
-      ============================== */}
-      {projects.length > 0 && (
-        <div className="result-card project-section">
-          <h2 className="section-title">Recommended Projects</h2>
+      {/* PROJECT SECTION */}
+      {projects?.length > 0 && (
+        <div className="glass-card projects-container">
+          <h2 className="section-heading">💡 Recommended Projects</h2>
 
           <div className="project-grid">
             {projects.map((p, i) => (
-              <div key={i} className="project-box">
-                <h3>{p.name}</h3>
+              <div key={i} className="project-card">
+                <h3 className="project-title">{p.name}</h3>
 
                 <p><b>Problem:</b> {p.problem}</p>
                 <p><b>Tech Stack:</b> {p.techStack.join(", ")}</p>
                 <p><b>Difficulty:</b> {p.difficulty}</p>
 
-                <h4>What You Will Learn:</h4>
-                <ul>
+                <h4 className="learn-title">What You Will Learn:</h4>
+                <ul className="learn-list">
                   {p.whatYouLearn.map((skill, j) => (
                     <li key={j}>{skill}</li>
                   ))}

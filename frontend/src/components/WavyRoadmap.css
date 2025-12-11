@@ -59,7 +59,7 @@
 }
 
 .timeline-content {
-  background: white;
+  background:linear-gradient(135deg, #0f172a, #1e293b);
   padding: 18px;
   width: 60%;
   margin: 0 auto;

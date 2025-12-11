@@ -1,0 +1,172 @@
+/* PAGE */
+.interview-page {
+  padding-top: 90px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #e2e8f0;
+  padding-bottom: 40px;
+}
+
+/* HEADER */
+.interview-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.interview-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #60a5fa;
+}
+
+.interview-header p {
+  opacity: 0.8;
+}
+
+/* SELECT BLOCK */
+.selector-block {
+  width: 60%;
+  margin: auto;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.drop-select {
+  width: 70%;
+  padding: 12px;
+  margin: 8px 0 18px 0;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  color: white;
+  outline: none;
+  transition: 0.25s;
+}
+
+.drop-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 8px #60a5fa55;
+}
+
+/* START BTN */
+.start-btn {
+  background: #2563eb;
+  padding: 10px 26px;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.start-btn:hover {
+  background: #1d4ed8;
+}
+
+/* LOADING */
+.loading {
+  text-align: center;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+/* QUESTION CARD */
+.question-card {
+  width: 70%;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #334155;
+  padding: 25px;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.4s ease;
+}
+
+.question-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timer {
+  background: #1e293b;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid #334155;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+/* QUESTION TEXT */
+.question-text {
+  margin-top: 15px;
+  font-size: 17px;
+  color: #f1f5f9;
+  line-height: 1.5;
+}
+
+/* ANSWER BOX */
+.answer-input {
+  width: 100%;
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  resize: none;
+  min-height: 130px;
+}
+
+.answer-input:focus {
+  border-color: #3b82f6;
+}
+
+/* SUBMIT */
+.submit-btn {
+  margin-top: 12px;
+  background: #2563eb;
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #1d4ed8;
+}
+
+/* FEEDBACK BOX */
+.feedback-box {
+  margin-top: 20px;
+  background: #1e293b;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+}
+
+/* FINAL REPORT CARD */
+.final-card {
+  width: 70%;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #334155;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.4s ease;
+}
+
+.final-card h2 {
+  color: #60a5fa;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,174 @@
+/* Wrapper */
+.roadmap-wrapper {
+  padding-top: 110px;
+  width: 80%;
+  margin: auto;
+  color: white;
+  animation: fadeIn 0.7s ease;
+}
+
+/* Header Section */
+.roadmap-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.roadmap-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #93c5fd;
+}
+
+.roadmap-sub {
+  font-size: 17px;
+  opacity: 0.8;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* Upload box */
+.resume-upload-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.upload-btn {
+  padding: 12px 22px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.upload-btn:hover {
+  background: #243447;
+}
+.upload-btn input {
+  display: none;
+}
+
+.resume-info-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.resume-file-icon {
+  font-size: 22px;
+}
+
+.resume-file-name {
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.remove-resume-btn {
+  background: #ef4444;
+  border: none;
+  padding: 6px 12px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.remove-resume-btn:hover {
+  background: #dc2626;
+}
+
+/* Generate Button */
+.generate-roadmap-btn {
+  display: block;
+  margin: auto;
+  background: #2563eb;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.generate-roadmap-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Loading */
+.loading-txt {
+  text-align: center;
+  margin-top: 15px;
+  color: #60a5fa;
+}
+
+/* Glass Card */
+.glass-card {
+  margin-top: 35px;
+  padding: 25px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px);
+  box-shadow: 0px 8px 24px rgba(0,0,0,0.45);
+}
+
+/* Section Heading */
+.section-heading {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #bfdbfe;
+}
+
+/* PROJECT GRID */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 22px;
+}
+
+.project-card {
+  background: rgba(255,255,255,0.09);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.15);
+}
+
+.project-title {
+  font-size: 20px;
+  color: #93c5fd;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.learn-title {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #facc15;
+}
+
+.learn-list li {
+  margin-bottom: 6px;
+  list-style-type: "✨ ";
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -506,3 +506,23 @@ body {
 .file-icon {
   font-size: 22px;
 }
+
+.nav-links a {
+  margin-left: 30px;
+  font-size: 15px;
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: 0.2s;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-links a:hover {
+  color: #60a5fa;
+}
+
+.active-link {
+  color: #60a5fa !important;        /* highlight color */
+  border-bottom: 2px solid #60a5fa; /* underline indicator */
+  font-weight: 700;                 /* bold for active state */
+}

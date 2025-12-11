@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import "../components/Chat.css"; // ⭐ IMPORT CSS
 
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+
+  const chatEndRef = useRef(null);
+
+  // Auto scroll to bottom on new message
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -14,7 +22,7 @@ function Chat() {
 
     try {
       const res = await axios.post("http://localhost:5000/api/chat", {
-        message: input
+        message: input,
       });
 
       const botMsg = { role: "bot", text: res.data.reply };
@@ -22,60 +30,45 @@ function Chat() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "bot", text: "Error: Could not get response" }
+        { role: "bot", text: "⚠️ Error: Could not get response" },
       ]);
     }
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
-      <h2>Career Chat Assistant</h2>
+    <div className="chat-page">
 
-      <div
-        style={{
-          height: "400px",
-          overflowY: "auto",
-          padding: "15px",
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          marginBottom: "20px",
-          background: "#fafafa"
-        }}
-      >
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            style={{
-              textAlign: msg.role === "user" ? "right" : "left",
-              marginBottom: "10px"
-            }}
-          >
-            <p
-              style={{
-                display: "inline-block",
-                padding: "10px",
-                borderRadius: "10px",
-                background: msg.role === "user" ? "#2563eb" : "#e5e7eb",
-                color: msg.role === "user" ? "white" : "black",
-                maxWidth: "70%"
-              }}
+      <div className="chat-container">
+        <h2 className="chat-title">AI Career Assistant 💬</h2>
+
+        <div className="chat-window">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`chat-bubble ${msg.role === "user" ? "user" : "bot"}`}
             >
               {msg.text}
-            </p>
-          </div>
-        ))}
+            </div>
+          ))}
+          <div ref={chatEndRef} />
+        </div>
+
+        <div className="chat-input-row">
+          <input
+            type="text"
+            className="chat-input"
+            value={input}
+            placeholder="Ask a career question..."
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          />
+
+          <button className="chat-send-btn" onClick={sendMessage}>
+            Send ➤
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: "10px" }}>
-        <input
-          type="text"
-          value={input}
-          placeholder="Ask a career question..."
-          onChange={(e) => setInput(e.target.value)}
-          style={{ flex: 1, padding: "10px", borderRadius: "10px" }}
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
     </div>
   );
 }
